@@ -63,4 +63,41 @@ graph TB
     class NSG securityStyle
 ```
 
-**Note:** For this POC cost-optimization, the Load Balancer and Monitoring<br/>components are visualized here as part of the reference design but are<br/>not currently deployed in the Terraform script."
+**Note:** For this POC cost-optimization, the Load Balancer and Monitoring components are visualized here as part of the reference design but are not currently deployed in the Terraform script."
+
+## 3. Technology Stack
+* **Cloud Provider:** Microsoft Azure
+* **IaC:** Terraform
+* **Application:** Python 3.9 (Flask)
+* **Scripting:** Bash / Azure CLI
+
+## 4. How to Deploy
+**Prerequisites**
+* **Azure CLI installed**
+* **Terraform installed**
+
+**Steps**
+**1. Clone  the Repo**
+```
+git clone [https://github.com/](https://github.com/)<YOUR_USERNAME>azure-landing-zone-poc.git
+cd azure-landing-zone-poc
+```
+**2. Infrastructure Deployment:**
+```
+terraform init
+terraform plan
+terraform apply
+```
+**3. Application Deployment**
+```
+cd app
+zip -r app.zip .
+az webapp deploy --resource-group rg-landing-zone-poc --name <YOUR_APP_NAME> --src-path app.zip --type zip
+```
+
+## 5. Architectural Decisions
+| Component | Decision | Justification |
+| ---- | ---- | --- |
+| B1 Service Plan  | Basic Tier | The B1 SKU is the minimum tier required to support VNet Integration, allowing the PaaS app to communicate securely within the VNet.|
+| Subnet Delegation  | Microsoft.Web/serverFarms  | Required to "inject" the App Service into the Virtual Network subnet.|
+| Terraform State | Local | For this POC, state is stored locally. In production, this would be moved to Azure Storage Account for team collaboration. |
