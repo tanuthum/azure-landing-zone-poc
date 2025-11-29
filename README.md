@@ -15,26 +15,49 @@ This project implements a secure **Azure Landing Zone** using **Infrastructure a
 Below is the logical architecture of the Landing Zone:
 
 ```mermaid
-graph TD
-    User((Internet User)) -->|HTTP:80| AppService
+graph TB
+    User([Internet User]) -->|HTTP:80| LB[Load Balancer]
     
-    subgraph Azure Cloud ["Azure Cloud (East US)"]
-        style Azure Cloud fill:#e6f2ff,stroke:#0072C6
+    subgraph Azure["☁️ Azure Cloud - Southeast Asia"]
+        direction TB
         
-        subgraph RG ["Resource Group: rg-landing-zone-poc"]
-            style RG fill:#ffffff,stroke:#666
+        subgraph RG["📦 Resource Group: rg-landing-zone-poc"]
+            direction TB
             
-            subgraph VNet ["Virtual Network (10.0.0.0/16)"]
-                style VNet fill:#f0f0f0,stroke:#333,stroke-dasharray: 5 5
+            subgraph VNet["🌐 Virtual Network<br/>10.0.0.0/16"]
+                direction TB
                 
-                subgraph Subnet ["Workload Subnet (10.0.1.0/24)"]
-                    style Subnet fill:#d6eaff,stroke:#0072C6
-                    
-                    NSG["NSG: Allow HTTP"]
-                    AppService["App Service (Python/Flask)"]
+                subgraph Subnet["🔒 Workload Subnet<br/>10.0.1.0/24"]
+                    direction LR
+                    NSG["🛡️ Network Security Group<br/>Allow: HTTP (80)"]
+                    AppService["🐍 App Service<br/>Python/Flask"]
                 end
+                
+                VNetInt["VNet Integration"]
             end
+            
+            Monitor["📊 Monitoring & Logs"]
         end
     end
-
-    AppService -.->|VNet Integration| Subnet
+    
+    LB -->|Routes Traffic| AppService
+    AppService -.->|Integrated| VNetInt
+    VNetInt -.->|Connected| Subnet
+    AppService -.->|Logs & Metrics| Monitor
+    NSG -->|Protects| AppService
+    
+    classDef userStyle fill:#34495e,stroke:#2c3e50,stroke-width:3px,color:#fff
+    classDef azureStyle fill:#0078d4,stroke:#005a9e,stroke-width:2px,color:#fff
+    classDef rgStyle fill:#50e6ff,stroke:#0078d4,stroke-width:2px,color:#000
+    classDef vnetStyle fill:#d4f1ff,stroke:#0078d4,stroke-width:2px,color:#000
+    classDef subnetStyle fill:#fff,stroke:#0078d4,stroke-width:2px,color:#000
+    classDef resourceStyle fill:#7fba00,stroke:#5a8700,stroke-width:2px,color:#fff
+    classDef securityStyle fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px,color:#fff
+    
+    class User userStyle
+    class Azure azureStyle
+    class RG rgStyle
+    class VNet vnetStyle
+    class Subnet subnetStyle
+    class AppService,Monitor resourceStyle
+    class NSG securityStyle
