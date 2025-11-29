@@ -61,5 +61,6 @@ graph TB
     class Subnet subnetStyle
     class AppService,Monitor resourceStyle
     class NSG securityStyle
-
+    
+---
 "Note: For this POC cost-optimization, the Load Balancer and Monitoring components are visualized here as part of the reference design but are not currently deployed in the Terraform script."
